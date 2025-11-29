@@ -8,6 +8,9 @@ packages:
   - name: HPM6264xPAx
     package: LQFP144
     pins: 144
+  - name: HPM6264xPBx
+    package: LQFP100
+    pins: 100
 memory:
   - address: 0x00000000
     kind: ram
