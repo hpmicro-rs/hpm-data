@@ -226,17 +226,61 @@ impl Gen {
         // generate pac.rs
 
         let data = generate::render(&ir, &gen_opts()).unwrap().to_string();
+
+        // update generated pac.rs to edition 2024
+        // TODO: fix upstream generation
+        let data = data
+            .replace("extern \"C\"", "unsafe extern \"C\"")
+            .replace("unsafe unsafe", "unsafe")
+            .replace(
+                "[link_section = \".vector_table.interrupts\"]",
+                "[unsafe(link_section = \".vector_table.interrupts\")]",
+            )
+            .replace("[no_mangle]", "[unsafe(no_mangle)]");
+
+        let data = data.replace("unsafe impl cortex_m :: interrupt :: InterruptNumber for Interrupt { # [inline (always)] fn number (self) -> u16 { self as u16 } } ", "");
+        let mut data = data.replace(
+            r#"# [cfg (feature = "rt")] pub use cortex_m_rt :: interrupt ;"#,
+            "",
+        );
+
+        // Generate match arms for from_number method
+        let mut match_arms = String::new();
+        if !core.interrupts.is_empty() {
+            let mut sorted_interrupts = core.interrupts.clone();
+            sorted_interrupts.sort_by_key(|irq| irq.number);
+
+            for irq in &sorted_interrupts {
+                match_arms.push_str(&format!(
+                    "                     {} => Ok(Self::{}),\n",
+                    irq.number, irq.name
+                ));
+            }
+        }
+
+        data.push_str(&format!(
+            r#"
+        #[cfg(feature = "rt")]
+        unsafe impl riscv_rt :: InterruptNumber for Interrupt {{
+            const MAX_INTERRUPT_NUMBER: usize = 1024;
+            #[inline(always)]
+            fn number(self) -> usize {{
+                self as usize
+            }}
+            #[inline(always)]
+            fn from_number(value: usize) -> Result<Self, riscv_rt::result::Error> {{
+                match value {{
+                    {}
+                    _ => Err(riscv_rt::result::Error::InvalidVariant(value)),
+                }}
+            }}
+        }}
+        unsafe impl riscv_rt::ExternalInterruptNumber for Interrupt {{ }}
+        "#,
+            match_arms
+        ));
+
         let data = data.replace("] ", "]\n");
-        // FIXME: conversion
-        let data = data.replace("pub use cortex_m_rt :: interrupt ;", "");
-        let data = data.replace("cortex_m :: interrupt ", "crate ");
-        let data = data.replace("cortex_m", "riscv"); // FIXME
-
-        // avoid collision with riscv-rt
-        // In AndeStar V5 RISC-V core, the interrupt can be vectored.
-        // The first item is core trap handler.
-        let data = data.replace("__INTERRUPTS", "__VECTORED_INTERRUPTS");
-
         // Remove inner attributes like #![no_std]
         let data = Regex::new("# *! *\\[.*\\]").unwrap().replace_all(&data, "");
 
