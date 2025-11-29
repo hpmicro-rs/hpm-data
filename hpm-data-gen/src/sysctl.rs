@@ -233,7 +233,10 @@ pub fn add_sysctl_from_sdk<P: AsRef<Path>>(
         n if n.starts_with("HPM68") => &HPM6800_SYSCTL,
         n if n.starts_with("HPM6E") => &HPM6E00_SYSCTL,
         n if n.starts_with("HPM6P") => &HPM6300_SYSCTL, // HPM6P series use HPM6300 SYSCTL (need confirmation)
-        _ => anyhow::bail!("Unknown chip: {} - please add mapping in sysctl.rs", chip_name),
+        _ => anyhow::bail!(
+            "Unknown chip: {} - please add mapping in sysctl.rs",
+            chip_name
+        ),
     };
 
     // build Systick info

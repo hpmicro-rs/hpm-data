@@ -26,7 +26,10 @@ pub fn add_iomux_from_sdk<P: AsRef<Path>>(
         n if n.starts_with("HPM68") => sdk_path.join("soc/HPM6800/HPM6880/"),
         n if n.starts_with("HPM6E") => sdk_path.join("soc/HPM6E00/HPM6E80/"),
         n if n.starts_with("HPM6P") => sdk_path.join("soc/HPM6P00/HPM6P81/"), // HPM6P series use HPM6P81 iomux
-        _ => anyhow::bail!("Unknown chip: {} - please add mapping in iomux.rs", chip_name),
+        _ => anyhow::bail!(
+            "Unknown chip: {} - please add mapping in iomux.rs",
+            chip_name
+        ),
     };
 
     let iomux_path = chip_inc_path.join("hpm_iomux.h");
