@@ -12,7 +12,7 @@ case "$CMD" in
         git clone --depth 1 --branch v1.10.0 https://github.com/hpmicro/hpm_sdk.git
 
         echo Syncing SVDs from hpm_sdk...
-        find  hpm_sdk/soc -iname '*_svd.xml' -exec cp -v {} ./svd \;
+        find hpm_sdk/soc -iname '*_svd.xml' -exec cp -v {} ./svd \;
     ;;
     install-chiptool)
         cargo install --git https://github.com/ch32-rs/chiptool
