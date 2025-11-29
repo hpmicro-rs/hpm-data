@@ -1,7 +1,7 @@
 [package]
 name = "hpm-metapac"
 version = "0.0.5"
-edition = "2021"
+edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/hpmicro/hpm-data"
 homepage = "https://github.com/hpmico/hpm-data"
@@ -21,7 +21,7 @@ default-target = "riscv32imafc-unknown-none-elf"
 targets = []
 
 [dependencies]
-riscv = "0.11.1"
+riscv = "0.15.0"
 vcell = "0.1"
 
 [features]
@@ -39,4 +39,4 @@ metadata = []
 rt = []
 memory-x = []
 
-# Chip-selection features
+# Chip-selection features (filled by script)

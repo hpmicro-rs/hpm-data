@@ -4,11 +4,9 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::str::FromStr;
 
-use chiptool::generate::CommonModule;
+use chiptool::transform::sanitize::Sanitize;
 use chiptool::{generate, ir, transform};
-use proc_macro2::TokenStream;
 use regex::Regex;
 
 mod data;
@@ -66,7 +64,7 @@ impl Gen {
                 base_address: p.address,
                 block: None,
                 description: None,
-                interrupts: HashMap::new(),
+                interrupts: BTreeMap::new(),
             };
 
             if let Some(bi) = &p.registers {
@@ -212,7 +210,7 @@ impl Gen {
 
         // Cleanups!
         transform::sort::Sort {}.run(&mut ir).unwrap();
-        transform::Sanitize {}.run(&mut ir).unwrap();
+        Sanitize {}.run(&mut ir).unwrap();
 
         // ==============================
         // Setup chip dir
@@ -410,7 +408,7 @@ impl Gen {
             });
 
             transform::sort::Sort {}.run(&mut ir).unwrap();
-            transform::Sanitize {}.run(&mut ir).unwrap();
+            Sanitize {}.run(&mut ir).unwrap();
 
             let items = generate::render(&ir, &gen_opts()).unwrap();
             let mut file = File::create(
@@ -501,9 +499,8 @@ fn stringify<T: Debug>(metadata: T) -> String {
 }
 
 fn gen_opts() -> generate::Options {
-    generate::Options {
-        common_module: CommonModule::External(TokenStream::from_str("crate::common").unwrap()),
-    }
+    // Use default options - newer chiptool may have different API
+    generate::Options::default()
 }
 
 fn gen_memory_x(out_dir: &Path, chip: &Chip) {

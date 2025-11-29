@@ -97,30 +97,30 @@ fn main() -> anyhow::Result<()> {
 
     for chip in &mut chips {
         for core in &mut chip.cores {
-            if let Some(_inc_path) = core.include_interrupts.take() {
-                // Load interrupts directly from SDK header file (more accurate than YAML)
-                if let Some(interrupts) = interrupts::load_interrupts_from_header(&chip.name)? {
-                    println!("    Loading interrupts from header for chip: {}", chip.name);
+            // Load interrupts directly from SDK header file (always, no longer depends on YAML config)
+            core.include_interrupts.take(); // consume the field if it exists (for backward compatibility)
 
-                    let mut sorted_interrupts: Vec<(String, u8)> = interrupts.into_iter().collect();
-                    sorted_interrupts.sort_by_key(|(_, number)| *number);
+            if let Some(interrupts) = interrupts::load_interrupts_from_header(&chip.name)? {
+                println!("    Loading interrupts from header for chip: {}", chip.name);
 
-                    for (name, number) in sorted_interrupts {
-                        core.interrupts
-                            .push(hpm_data_serde::chip::core::Interrupt { name, number });
-                    }
+                let mut sorted_interrupts: Vec<(String, u8)> = interrupts.into_iter().collect();
+                sorted_interrupts.sort_by_key(|(_, number)| *number);
 
-                    // Add Core Local Interrupt as Interrupt 0
-                    core.interrupts.push(hpm_data_serde::chip::core::Interrupt {
-                        name: format!("CORE_LOCAL"),
-                        number: 0,
-                    });
-                } else {
-                    println!(
-                        "    ⚠️  No interrupts header found for chip: {}, skipping",
-                        chip.name
-                    );
+                for (name, number) in sorted_interrupts {
+                    core.interrupts
+                        .push(hpm_data_serde::chip::core::Interrupt { name, number });
                 }
+
+                // Add Core Local Interrupt as Interrupt 0
+                core.interrupts.push(hpm_data_serde::chip::core::Interrupt {
+                    name: format!("CORE_LOCAL"),
+                    number: 0,
+                });
+            } else {
+                println!(
+                    "    ⚠️  No interrupts header found for chip: {}, skipping",
+                    chip.name
+                );
             }
 
             // append peripherals from includes
