@@ -1,0 +1,45 @@
+name: HPM6E8Y
+family: HPM6E00 Series
+sub_family: HPM6E00, Single-core
+packages:
+- name: HPM6E8YxGNx
+  package: BGA196
+  pins: 196
+- name: HPM6E8YxVMx
+  package: BGA289
+  pins: 289
+memory:
+- address: 0
+  kind: ram
+  name: ILM0
+  size: 256K
+- address: 2097152
+  kind: ram
+  name: DLM0
+  size: 256K
+- address: 18874368
+  kind: ram
+  name: AXI_SRAM0
+  size: 512K
+- address: 19398656
+  kind: ram
+  name: AXI_SRAM1
+  size: 512K
+- address: 4028628992
+  kind: ram
+  name: AHB_SRAM
+  size: 32K
+- address: 2147483648
+  kind: flash
+  name: XPI0
+  size: 1M
+cores:
+- name: RV32-IMAFDCPB
+  ip-core: Andes D45
+  include_peripherals:
+  - ../family/COMMON.yaml
+  - ../family/HPM6E00.yaml
+  - ../family/HPM6E00_NonBasic.yaml
+  gen_dma_channels:
+    HDMA: 32
+    XDMA: 32

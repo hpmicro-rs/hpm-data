@@ -37,8 +37,6 @@ cores:
     include_peripherals:
       - "../family/COMMON.yaml"
       - "../family/HPM6800.yaml"
-    include_interrupts: "../interrupts/HPM6830.yaml"
-    include_dmamux: "../dmamux/HPM6880.yaml"
     gen_dma_channels:
       HDMA: 32
       XDMA: 32

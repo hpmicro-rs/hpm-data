@@ -1,0 +1,39 @@
+name: HPM68D4
+family: HPM6800 Series
+sub_family: HPM6800, Single-core
+packages:
+- name: HPM68D4xBDx
+  package: BGA417
+  pins: 417
+memory:
+- address: 0
+  kind: ram
+  name: ILM
+  size: 262144
+- address: 524288
+  kind: ram
+  name: DLM
+  size: 262144
+- address: 18874368
+  kind: ram
+  name: AXI_SRAM
+  size: 524288
+- address: 4030726144
+  kind: ram
+  name: AHB_SRAM
+  size: 32768
+- address: 4094885888
+  kind: ram
+  name: APB_SRAM
+  size: 16384
+- address: 2147483648
+  kind: flash
+  name: XPI0
+  size: 1048576
+cores:
+- name: RV32-IMAFDCPB
+  ip-core: Andes D45
+  include_peripherals:
+  - ../family/COMMON.yaml
+  gen_dma_channels:
+    HDMA: 32

@@ -85,7 +85,7 @@ pub fn handle_chip_dmamux_include<P: AsRef<Path>>(
     path: P,
     chip: &mut hpm_data_serde::Chip,
 ) -> anyhow::Result<()> {
-    let meta_yaml_path = path.as_ref();
+    let _meta_yaml_path = path.as_ref();
 
     for core in &mut chip.cores {
         if let Some(_include_path) = core.include_dmamux.take() {

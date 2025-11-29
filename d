@@ -51,7 +51,7 @@ case "$CMD" in
     gen)
         rm -rf build/data
         RUST_BACKTRACE=1 cargo run -p hpm-data-gen
-        RUST_BACKTRACE=1 cargo run -p hpm-metapac-gen -- "HPM53*" "HPM67*" "HPM64*" "HPM62*" "HPM63*" "HPM68*" "HPM6E*"
+        RUST_BACKTRACE=1 cargo run -p hpm-metapac-gen -- "HPM53*" "HPM67*" "HPM64*" "HPM62*" "HPM63*" "HPM68*" "HPM6E*" "HPM6P*" "HPM5E*"
     ;;
     prepare-publish)
         cd build/hpm-metapac/

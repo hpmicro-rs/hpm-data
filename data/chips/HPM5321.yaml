@@ -40,8 +40,6 @@ cores:
       - "../family/HPM5300_MCAN.yaml"
       - "../family/HPM5300_PLB.yaml"
       - "../family/HPM5300_Secure.yaml"
-    include_interrupts: "../interrupts/HPM5361.yaml"
-    include_dmamux: "../dmamux/HPM5361.yaml"
     gen_dma_channels:
       HDMA: 32
 

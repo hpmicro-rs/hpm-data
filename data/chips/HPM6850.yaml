@@ -38,8 +38,6 @@ cores:
       - "../family/COMMON.yaml"
       - "../family/HPM6800.yaml"
       - "../family/HPM6800_NonBasic.yaml"
-    include_interrupts: "../interrupts/HPM6850.yaml"
-    include_dmamux: "../dmamux/HPM6880.yaml"
     gen_dma_channels:
       HDMA: 32
       XDMA: 32

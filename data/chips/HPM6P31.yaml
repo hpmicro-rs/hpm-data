@@ -1,0 +1,43 @@
+name: HPM6P31
+family: HPM6P00 Series
+sub_family: HPM6P00, Single-core
+packages:
+- name: HPM6P31xPFx
+  package: LQFP64
+  pins: 64
+memory:
+- address: 0
+  kind: ram
+  name: ILM0
+  size: 128K
+- address: 262144
+  kind: ram
+  name: ILM1
+  size: 128K
+- address: 2097152
+  kind: ram
+  name: DLM0
+  size: 128K
+- address: 2359296
+  kind: ram
+  name: DLM1
+  size: 128K
+- address: 18874368
+  kind: ram
+  name: AXI_SRAM0
+  size: 256K
+- address: 4028628992
+  kind: ram
+  name: AHB_SRAM
+  size: 32K
+- address: 2147483648
+  kind: flash
+  name: XPI0
+  size: 256M
+cores:
+- name: RV32-IMAFDCPB
+  ip-core: Andes D45
+  include_peripherals:
+  - ../family/COMMON.yaml
+  gen_dma_channels:
+    HDMA: 32

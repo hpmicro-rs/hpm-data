@@ -1,0 +1,38 @@
+name: HPM5E11
+family: HPM5E00 Series
+sub_family: HPM5E00, Single-core
+packages:
+- name: HPM5E11xGNx
+  package: BGA196
+  pins: 196
+- name: HPM5E11xPBx
+  package: LQFP100
+  pins: 100
+memory:
+- address: 0
+  kind: ram
+  name: ILM
+  size: 128K
+- address: 2097152
+  kind: ram
+  name: DLM
+  size: 128K
+- address: 18874368
+  kind: ram
+  name: AXI_SRAM0
+  size: 256K
+- address: 4028628992
+  kind: ram
+  name: AHB_SRAM
+  size: 32K
+- address: 2147483648
+  kind: flash
+  name: XPI0
+  size: 1M
+cores:
+- name: RV32-IMAFDCPB
+  ip-core: Andes D25F
+  include_peripherals:
+  - ../family/COMMON.yaml
+  gen_dma_channels:
+    HDMA: 32

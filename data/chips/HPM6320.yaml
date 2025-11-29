@@ -37,8 +37,6 @@ cores:
       - "../family/COMMON.yaml"
       - "../family/HPM6300.yaml"
       - "../family/HPM6300_USB_ENET.yaml"
-    include_interrupts: "../interrupts/HPM6360.yaml"
-    include_dmamux: "../dmamux/HPM6360.yaml"
     gen_dma_channels:
       HDMA: 8
       XDMA: 8
