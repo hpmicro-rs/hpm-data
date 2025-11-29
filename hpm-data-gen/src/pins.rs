@@ -17,6 +17,7 @@ pub fn add_ioc_pins_from_sdk<P: AsRef<Path>>(
 
     let header_file = match chip_name {
         n if n.starts_with("HPM53") => sdk_path.join("soc/HPM5300/ip/hpm_ioc_regs.h"),
+        n if n.starts_with("HPM5E") => sdk_path.join("soc/HPM5E00/ip/hpm_ioc_regs.h"), // HPM5E series
         n if n.starts_with("HPM62") => sdk_path.join("soc/HPM6200/ip/hpm_ioc_regs.h"),
         n if n.starts_with("HPM63") => sdk_path.join("soc/HPM6300/ip/hpm_ioc_regs.h"),
         n if n.starts_with("HPM67") || n.starts_with("HPM64") => {
@@ -24,7 +25,8 @@ pub fn add_ioc_pins_from_sdk<P: AsRef<Path>>(
         }
         n if n.starts_with("HPM68") => sdk_path.join("soc/HPM6800/ip/hpm_ioc_regs.h"),
         n if n.starts_with("HPM6E") => sdk_path.join("soc/HPM6E00/ip/hpm_ioc_regs.h"),
-        _ => anyhow::bail!("Unknown chip: {}", chip_name),
+        n if n.starts_with("HPM6P") => sdk_path.join("soc/HPM6P00/ip/hpm_ioc_regs.h"), // HPM6P series
+        _ => anyhow::bail!("Unknown chip: {} - please add mapping in pins.rs", chip_name),
     };
 
     let content = std::fs::read_to_string(&header_file)

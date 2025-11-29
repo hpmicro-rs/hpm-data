@@ -17,6 +17,7 @@ pub fn add_iomux_from_sdk<P: AsRef<Path>>(
     let chip_inc_path = match chip_name {
         n if n.starts_with("HPM5301") => sdk_path.join("soc/HPM5300/HPM5301/"),
         n if n.starts_with("HPM53") => sdk_path.join("soc/HPM5300/HPM5361/"),
+        n if n.starts_with("HPM5E") => sdk_path.join("soc/HPM5E00/HPM5E31/"), // HPM5E series use HPM5E31 iomux
         n if n.starts_with("HPM62") => sdk_path.join("soc/HPM6200/HPM6280/"),
         n if n.starts_with("HPM63") => sdk_path.join("soc/HPM6300/HPM6360/"),
         n if n.starts_with("HPM67") || n.starts_with("HPM64") => {
@@ -24,7 +25,8 @@ pub fn add_iomux_from_sdk<P: AsRef<Path>>(
         }
         n if n.starts_with("HPM68") => sdk_path.join("soc/HPM6800/HPM6880/"),
         n if n.starts_with("HPM6E") => sdk_path.join("soc/HPM6E00/HPM6E80/"),
-        _ => anyhow::bail!("Unknown chip: {}", chip_name),
+        n if n.starts_with("HPM6P") => sdk_path.join("soc/HPM6P00/HPM6P81/"), // HPM6P series use HPM6P81 iomux
+        _ => anyhow::bail!("Unknown chip: {} - please add mapping in iomux.rs", chip_name),
     };
 
     let iomux_path = chip_inc_path.join("hpm_iomux.h");
@@ -51,28 +53,32 @@ pub fn add_iomux_from_sdk<P: AsRef<Path>>(
     }
 
     // PMIC domain
-
     let pmic_iomux = chip_inc_path.join("hpm_pmic_iomux.h");
 
-    let content = std::fs::read_to_string(&pmic_iomux)
-        .expect(format!("Failed to read file: {:?}", &pmic_iomux).as_str());
+    // HPM5E series doesn't have PMIC domain, so make it optional
+    if pmic_iomux.exists() {
+        let content = std::fs::read_to_string(&pmic_iomux)
+            .expect(format!("Failed to read file: {:?}", &pmic_iomux).as_str());
 
-    // #define PIOC_PY01_FUNC_CTL_PGPIO_Y_01          IOC_PAD_FUNC_CTL_ALT_SELECT_SET(0)
-    let pmic_iomux_pattern = regex::Regex::new(
-        r"#define\s+(PIOC_(\w+)_FUNC_CTL_(\w+))\s+IOC_PAD_FUNC_CTL_ALT_SELECT_SET\((\d+)\)",
-    )
-    .expect("Invalid regex");
-
-    for mux in pmic_iomux_pattern.captures_iter(&content).map(|cap| {
-        (
-            cap.get(1).unwrap().as_str().to_string(),
-            cap.get(4).unwrap().as_str().parse().unwrap(),
+        // #define PIOC_PY01_FUNC_CTL_PGPIO_Y_01          IOC_PAD_FUNC_CTL_ALT_SELECT_SET(0)
+        let pmic_iomux_pattern = regex::Regex::new(
+            r"#define\s+(PIOC_(\w+)_FUNC_CTL_(\w+))\s+IOC_PAD_FUNC_CTL_ALT_SELECT_SET\((\d+)\)",
         )
-    }) {
-        all_iomux.push(hpm_data_serde::chip::core::IoMux {
-            name: mux.0,
-            value: mux.1,
-        });
+        .expect("Invalid regex");
+
+        for mux in pmic_iomux_pattern.captures_iter(&content).map(|cap| {
+            (
+                cap.get(1).unwrap().as_str().to_string(),
+                cap.get(4).unwrap().as_str().parse().unwrap(),
+            )
+        }) {
+            all_iomux.push(hpm_data_serde::chip::core::IoMux {
+                name: mux.0,
+                value: mux.1,
+            });
+        }
+    } else {
+        println!("    {} skipping PMIC iomux (file not found)", chip_name);
     }
 
     // BATT domain
